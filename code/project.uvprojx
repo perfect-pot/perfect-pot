@@ -429,6 +429,31 @@
               <FileType>5</FileType>
               <FilePath>.\src\pump.h</FilePath>
             </File>
+            <File>
+              <FileName>UART.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\UART.c</FilePath>
+            </File>
+            <File>
+              <FileName>UART.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\UART.h</FilePath>
+            </File>
+            <File>
+              <FileName>UART_printf.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\UART_printf.c</FilePath>
+            </File>
+            <File>
+              <FileName>I2C.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\I2C.c</FilePath>
+            </File>
+            <File>
+              <FileName>I2C.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\I2C.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -5,35 +5,67 @@
  * Torin Schlunk & Cameron Barrett
  */
 
-#include "ADC.h"
+#include "SysClock.h"
 #include "pump.h"
-//#include "SysClock.h"
+#include "ADC.h"
+#include "UART.h"
+#include "I2C.h"
 #include "stm32l476xx.h"
 #include <stdio.h>
-
-uint32_t data = 0;
+#include <string.h>
 
 int main(void) {
 	// Initialization
-	//System_Clock_Init(); // Switch System Clock = 8 MHz, needed for logic analyzer
+	System_Clock_Init();
 	ADC_Init();
 	Pump_Init();
+	UART1_Init();
+	UART1_GPIO_Init();
+	USART_Init(USART1);
+	I2C_GPIO_Init();
+	I2C_Initialization();
 
 	int i;
+	uint32_t moistureData = 0;
+	uint8_t SlaveAddress = 0x48 << 1;
+	uint8_t temperatureData;
+	uint8_t Data_Send = 0x00;
+	char rxByte;
+	int enableWatering = 1;
 	while (1) {
-		// 1. Through the ADC control register, start a regular conversion.
+		//printf("Connected. Y to enable watering, N to disable.\n");
+		// Check for remote enable/disable signal
+		/*
+		scanf("%c", &rxByte);
+		if (rxByte == 'Y' | rxByte == 'y') { 
+			enableWatering = 1;
+			printf("Watering enabled\n");
+		}
+		else if (rxByte == 'N' | rxByte == 'n') {
+			enableWatering = 0;
+			printf("Watering disabled\n");
+		}
+		*/
+		
+		// Through the ADC control register, start a regular conversion.
 		ADC1->CR |= ADC_CR_ADSTART;
 
-		// 2. Wait until the ADC conversion (i.e. regular conversion of the master ADC) is complete.
+		// Wait until the ADC conversion (i.e. regular conversion of the master ADC) is complete.
 		// This information can be found in the ADC common status register.
 		while(!(ADC123_COMMON->CSR & ADC_CSR_EOS_MST));
 
-		// 3. Read the ADC data register to retrieve the measurement. The ADC should return a value
+		// Read the ADC data register to retrieve the measurement. The ADC should return a value
 		// between 0 and roughly 4096.
-		data = (uint16_t)ADC1->DR;
+		moistureData = (uint16_t)ADC1->DR;
+		
+		I2C_SendData(I2C1, SlaveAddress, &Data_Send, 1);
+		I2C_ReceiveData(I2C1, SlaveAddress, &temperatureData, 1);
+		
+		printf("T%u M%u", temperatureData, moistureData);
+		printf("\n");
 
 		// Respond to data
-		if (data > 3300) {
+		if ((1450 < moistureData) && (moistureData < 3300)) {
 			Pump_On();
 		}
 		else {
@@ -41,6 +73,6 @@ int main(void) {
 		}
 		
 		// Some delay
-		for(i=0; i<1000; ++i);
+		for(i=0; i<50000; ++i);
 	}
 }
