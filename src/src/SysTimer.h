@@ -1,9 +1,8 @@
 /*
  * ECE 153B - Winter 2023
  *
- * Name(s): Torin Schlunk, Cameron Barrett
- * Section: Tuesday
- * Lab: 2B
+ * Final Project - Perfect Pot
+ * Torin Schlunk & Cameron Barrett
  */
 
 #ifndef __STM32L476G_NUCLEO_SYSTICK_H
