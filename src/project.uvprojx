@@ -454,6 +454,16 @@
               <FileType>5</FileType>
               <FilePath>.\src\I2C.h</FilePath>
             </File>
+            <File>
+              <FileName>SysTimer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\SysTimer.c</FilePath>
+            </File>
+            <File>
+              <FileName>SysTimer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\SysTimer.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

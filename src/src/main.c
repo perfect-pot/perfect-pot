@@ -10,6 +10,7 @@
 #include "ADC.h"
 #include "UART.h"
 #include "I2C.h"
+#include "SysTimer.h"
 #include "stm32l476xx.h"
 #include <stdio.h>
 #include <string.h>
@@ -24,6 +25,7 @@ int main(void) {
 	USART_Init(USART1);
 	I2C_GPIO_Init();
 	I2C_Initialization();
+	SysTick_Init();
 
 	int i;
 	uint32_t moistureData = 0;
@@ -33,19 +35,8 @@ int main(void) {
 	char rxByte;
 	int enableWatering = 1;
 	while (1) {
-		//printf("Connected. Y to enable watering, N to disable.\n");
-		// Check for remote enable/disable signal
-		/*
-		scanf("%c", &rxByte);
-		if (rxByte == 'Y' | rxByte == 'y') { 
-			enableWatering = 1;
-			printf("Watering enabled\n");
-		}
-		else if (rxByte == 'N' | rxByte == 'n') {
-			enableWatering = 0;
-			printf("Watering disabled\n");
-		}
-		*/
+		// Some delay
+		delay(5000);
 		
 		// Through the ADC control register, start a regular conversion.
 		ADC1->CR |= ADC_CR_ADSTART;
@@ -64,15 +55,21 @@ int main(void) {
 		printf("T%u M%u", temperatureData, moistureData);
 		printf("\n");
 
-		// Respond to data
-		if ((1450 < moistureData) && (moistureData < 3300)) {
-			Pump_On();
+		// decide whether to water
+		if (moistureData > 3300) { // dry
+			enableWatering += 1;
 		}
-		else {
+		else if (moistureData < 3300) { // moist
+			enableWatering = 0;
+		}
+		if (enableWatering > 3) { // try watering up to 3 times
+			printf("Watering failed. Please add more water and check tubes.\n");
+		}
+		else if (enableWatering) {
+			Pump_On();
+			printf("Watering...\n");
+			delay(7000);
 			Pump_Off();
 		}
-		
-		// Some delay
-		for(i=0; i<50000; ++i);
 	}
 }
